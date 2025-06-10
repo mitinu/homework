@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+    function replaceStr(str){
+        const chars = str.split('');
+        for (const charId in chars) {
+            if (chars[charId]==`'`) {
+                chars[charId] = `"`
+            }
+        };
+        return chars.join('');
+    }
+
+    const text = `
+    'Товар добавлен в корзину'
+    'ID продукта: 12345'
+    'Название: Молоко'
+    'Цена: 80 руб.'
+    'Количество: 2 шт.'
+    'Общая сумма: 160 руб.'
+    'Статус: в наличии'
+    'Категория: Молочные продукты'
+    'Производитель: Веселый молочник'
+    'Срок годности: 10 дней'
+`
+    const result = text.replace(/'/g, `"`);
+    const result2 = replaceStr(text)
+    console.log(text)
+    console.log(result)
+    console.log(result2)
+</script>
+</html>
