@@ -10,11 +10,15 @@ for (let cart_buttonIdx = 0; cart_buttonIdx < document.getElementsByClassName("c
     cart_button.addEventListener("click", creatBasckets.bind(this, goods));
 }
 function creatBasckets(list, event) {
-    for (let goods_listIdx = 0; goods_listIdx < document.getElementsByClassName("goods-list").length; goods_listIdx++) {
-        const goods_list_html = document.getElementsByClassName("goods-list")[goods_listIdx];
+    const goods_list_html = document.getElementById("goods-list");
+    if (goods_list_html.innerHTML=="") {
         const goodsList = list.map(product => renderGoodsItem(product));
         goods_list_html.innerHTML = goodsList.join("");
     }
+    else{
+        goods_list_html.innerHTML = ""
+    }
+    
 }
 function renderGoodsItem (product){
     const title = product.title?product.title:"товар";
