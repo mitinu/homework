@@ -66,6 +66,8 @@ class Bascket {
   }
 }
 class Product {
+  static bascket
+  static goods
   constructor(id_product, product_name, price) {
     this.id_product = id_product
     this.product_name = product_name?product_name:"товар";
@@ -93,8 +95,8 @@ class Product {
     addButton.type = 'button';
     addButton.textContent = 'добавить';
     addButton.addEventListener("click", event=>{
-      goods.removeProduct(this)
-      bascket.pushProduct(this)
+      Product.goods.removeProduct(this)
+      Product.bascket.pushProduct(this)
     })
 
     itemContent.append(title, pricePara, addButton);
@@ -123,8 +125,8 @@ class Product {
     addButton.type = 'button';
     addButton.textContent = 'удалить';
     addButton.addEventListener("click", event=>{
-      goods.pushProduct(this)
-      bascket.removeProduct(this)
+      Product.goods.pushProduct(this)
+      Product.bascket.removeProduct(this)
     })
 
     itemContent.append(title, pricePara, addButton);

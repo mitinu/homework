@@ -1,11 +1,17 @@
 let goods = null
 const bascket = new Bascket();
+Product.bascket = bascket
 
 fetch(urlCatalogData)
 .then(res=>{return res.json()})
 .then(data=>{
   goods = new Goods(data)
+  Product.goods = goods
 })
+
+
+
+
 
 for (let cart_buttonIdx = 0; cart_buttonIdx < document.getElementsByClassName("cart-button").length; cart_buttonIdx++) {
   const cart_button = document.getElementsByClassName("cart-button")[cart_buttonIdx];
