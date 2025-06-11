@@ -14,10 +14,13 @@
     </form>
 </body>
 <script>
+    // функция замены ' на "
     function replaceStr(str){
         const chars = str.split('');
         for (const charId in chars) {
             if (chars[charId]===`'`) {
+                // проверка на наличие пробелов или переходов на новую страку перед или после ковычки 
+                // для того чтоб апостроф не изменялся
                 const previous = chars[parseInt(charId)-1]===` ` || chars[parseInt(charId)-1]==="\n"
                 const next = chars[parseInt(charId)+1]===` ` || chars[parseInt(charId)+1]==="\n"
                 if (previous || next) {

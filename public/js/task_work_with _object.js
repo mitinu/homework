@@ -4,16 +4,29 @@ for (const sensorIdx in sensors) {
     for (const actIdx in sensor.acts) {
         const act = sensor.acts[actIdx];
         console.log(`акт: ${act.act_type_title} с id: ${act.act_id}`)
-        const date_start = new Date(act.date_start).toLocaleDateString('ru-RU')
+        const date_start = toLocaleDateString(new Date(act.date_start))
+        // получаем дату окончание акта 
         let date_end = null
-        
         if (act.period_action) {
             date_end = new Date(act.date_start)
-            date_end = new Date(date_end.setMonth(date_end.getMonth() + parseInt(act.period_action))).toLocaleDateString('ru-RU')
+            date_end = toLocaleDateString(new Date(date_end.setMonth(date_end.getMonth() + parseInt(act.period_action))))
         }
         else {
             date_end = "-"
         }
         console.log(`начало: ${date_start} конец: ${date_end}`)
     }
+}
+// функция которая конвентирует дату в формат гггг-мм-дд
+function toLocaleDateString(date){
+    const dateStr = date.getFullYear() 
+                    + "-"
+                    + (date.getMonth()+1<10?
+                                        "0"+(date.getMonth()+1):
+                                        date.getMonth()+1)
+                    + "-"
+                    + (date.getDay()<10?
+                                        "0"+date.getDay():
+                                        date.getDay());
+    return dateStr
 }
