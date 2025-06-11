@@ -32,11 +32,11 @@
     }
 
     const text = `
-    'Товар доба'влен в корзину'
-    'ID продукта: 12345'
-    'Название: Молоко'
-    'Цена: 80 руб.'
-`
+        'Товар доба'влен в корзину'
+        'ID продукта: 12345'
+        'Название: Молоко'
+        'Цена: 80 руб.'
+    `
     const result = text.replace(/'/g, '"')
                   .replace(/([а-яёА-ЯЁa-zA-Z])"([а-яёА-ЯЁa-zA-Z])/gu, "$1'$2");
     const result2 = replaceStr(text)
@@ -48,16 +48,28 @@
 
     document.getElementById("form").addEventListener("submit", event=>{
         event.preventDefault();
-        const formData = new FormData(event.target);
-    
+        const form = event.target
         
-        const textValue = formData.get('text');
-        const telValue = formData.get('tel');
-        const emailValue = formData.get('email');
+        const textValidation = /^[a-zA-Zа-яА-Я]*$/.test(form['text'].value);
+        if (!textValidation) {
+            form.elements['text'].style.border = "1px solid red"
+        }
+        else{
+            form.elements['text'].style.border = "1px solid black"
+        }
+        const telValidation = /\+7\(\d{3}\)\d{3}-\d{4}$/.test(form['tel'].value);
+        if (!telValidation) {
+            form.elements['tel'].style.border = "1px solid red"
+        }
+        else{
+            form.elements['tel'].style.border = "1px solid black"
+        }
+
+        const emailValidation = true// он валидируется из за type = email 
         console.log({
-            text: textValue,
-            tel: telValue,
-            email: emailValue
+            text: textValidation,
+            tel: telValidation,
+            email: emailValidation
         });
     })
 </script>
