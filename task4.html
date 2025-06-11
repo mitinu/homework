@@ -12,29 +12,30 @@
     function replaceStr(str){
         const chars = str.split('');
         for (const charId in chars) {
-            if (chars[charId]==`'`) {
-                chars[charId] = `"`
+            if (chars[charId]===`'`) {
+                const previous = chars[parseInt(charId)-1]===` ` || chars[parseInt(charId)-1]==="\n"
+                const next = chars[parseInt(charId)+1]===` ` || chars[parseInt(charId)+1]==="\n"
+                if (previous || next) {
+                    chars[charId] = `"`
+                }
             }
         };
         return chars.join('');
     }
 
     const text = `
-    'Товар добавлен в корзину'
+    'Товар доба'влен в корзину'
     'ID продукта: 12345'
     'Название: Молоко'
     'Цена: 80 руб.'
-    'Количество: 2 шт.'
-    'Общая сумма: 160 руб.'
-    'Статус: в наличии'
-    'Категория: Молочные продукты'
-    'Производитель: Веселый молочник'
-    'Срок годности: 10 дней'
 `
-    const result = text.replace(/'/g, `"`);
+    const result = text.replace(/'/g, '"')
+                  .replace(/([а-яёА-ЯЁa-zA-Z])"([а-яёА-ЯЁa-zA-Z])/gu, "$1'$2");
     const result2 = replaceStr(text)
+
     console.log(text)
     console.log(result)
     console.log(result2)
+    console.log(result3)
 </script>
 </html>
