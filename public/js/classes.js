@@ -11,11 +11,14 @@ class Goods {
     ]);
     this.render()
   }
+  serch(valueSerch){
+    this.render(this.goods.filter(product=>product.product_name.toLowerCase().includes(valueSerch.toLowerCase())))
+  }
   // загрузка товаров в дом
-  render() {
+  render(goods = this.goods) {
     const goods_html = document.getElementById("goods-list");
     goods_html.innerHTML = ""
-    this.goods.forEach(product => {
+    goods.forEach(product => {
       product.renderGoods(goods_html);
     });
   }
@@ -46,12 +49,15 @@ class Bascket {
     }
     this.render()
   }
+  serch(valueSerch){
+    this.render(this.bascket.filter(product=>product.product_name.toLowerCase().includes(valueSerch.toLowerCase())))
+  }
   // загрузка товаров в дом
-  render() {
+  render(bascket = this.bascket) {
     const myBascket_html = document.getElementById("myBascket");
     myBascket_html.innerHTML = "";
     if (this.visibility) {
-      this.bascket.forEach(product => {
+      bascket.forEach(product => {
        product.renderBasket(myBascket_html);
       });
     }

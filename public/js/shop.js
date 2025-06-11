@@ -1,5 +1,5 @@
 // создание классов для работы с списками таваров
-let goods = new Goods()
+const goods = new Goods()
 const bascket = new Bascket();
 // доболение обектов в класс продукт для коректного удаление и доболение товаров
 Product.goods = goods
@@ -23,3 +23,9 @@ for (let cart_buttonIdx = 0; cart_buttonIdx < document.getElementsByClassName("c
   });
 }
 
+
+document.getElementById("serch").addEventListener('change', event=>{
+  const valueSerch = event.target.value
+  bascket.serch(valueSerch)
+  goods.serch(valueSerch)
+})
