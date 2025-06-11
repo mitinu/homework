@@ -12,7 +12,12 @@ for (let cart_buttonIdx = 0; cart_buttonIdx < document.getElementsByClassName("c
 function creatBasckets(list, event) {
     const goods_list_html = document.getElementById("goods-list");
     if (goods_list_html.innerHTML=="") {
-        const goodsList = list.map(product => renderGoodsItem(product));
+        const goodsList = []
+        for (let productIdx = 0; productIdx < list.length; productIdx++) {
+            const product = list[productIdx];
+            goodsList.push(renderGoodsItem(product))
+        }
+        // const goodsList = list.map(product => renderGoodsItem(product));
         goods_list_html.innerHTML = goodsList.join("");
     }
     else{
