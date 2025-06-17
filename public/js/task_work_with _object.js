@@ -10,23 +10,29 @@ for (const sensorIdx in sensors) {
         if (act.period_action) {
             date_end = new Date(act.date_start)
             date_end = toLocaleDateString(new Date(date_end.setMonth(date_end.getMonth() + parseInt(act.period_action))))
-        }
-        else {
+        } else {
             date_end = "-"
         }
         console.log(`начало: ${date_start} конец: ${date_end}`)
     }
 }
-// функция которая конвентирует дату в формат гггг-мм-дд
-function toLocaleDateString(date){
-    const dateStr = date.getFullYear() 
-                    + "-"
-                    + (date.getMonth()+1<10?
-                                        "0"+(date.getMonth()+1):
-                                        date.getMonth()+1)
-                    + "-"
-                    + (date.getDay()<10?
-                                        "0"+date.getDay():
-                                        date.getDay());
+
+console.log(toLocaleDateString(""))
+console.log(toLocaleDateString(null))
+
+// функция, которая конвертирует дату в формат гггг-мм-дд
+function toLocaleDateString(date) {
+    if (!date){
+        return date
+    }
+    const dateStr = date.getFullYear()
+        + "-"
+        + (date.getMonth() + 1 < 10 ?
+            "0" + (date.getMonth() + 1) :
+            date.getMonth() + 1)
+        + "-"
+        + (date.getDay() < 10 ?
+            "0" + date.getDay() :
+            date.getDay());
     return dateStr
 }

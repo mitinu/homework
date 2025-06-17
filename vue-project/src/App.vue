@@ -7,18 +7,42 @@
           <div class="circle"></div>
           <div class="circle"></div>
         </nav>
-        <div class="serch">
-          <input type="text" id="serch">
+        <div class="search">
+          <input type="text" id="search" v-model="searchValue">
         </div>
       </div>
       <div class="bottom">
-        <button class="cart-button" type="button">Корзина</button>
-        <div><span>стоемость: </span><span id="full_price"></span></div>
+        <button @click="switchBasketVisible()">Корзина</button>
+        <div><span>стоимость: </span><span>{{fullPrice}} руб.</span></div>
       </div>
     </header>
     <main>
-      <article class="product_list" id="myBascket"></article>
-      <article class="product_list" id="goods-list"></article>
+      <article class="product_list" id="basket_list" v-if="basketVisible">
+        <div v-for="product in basketList" :key="product.id">
+          <div class="goods-item" v-if="search(product.name)">
+            <div class="img"></div>
+            <div class="item-content">
+              <h3>{{product.name}}</h3>
+              <p>{{product.price}} руб.</p>
+              <p>Количество: {{product.count}}</p>
+              <button type="button" @click="removeProduct(product)">удалить</button>
+            </div>
+          </div>
+        </div>
+        <div class="line"></div>
+      </article>
+      <article class="product_list" id="goods_list">
+        <div v-for="product in goodsList" :key="product.id">
+          <div class="goods-item" v-if="search(product.name)">
+            <div class="img"></div>
+            <div class="item-content">
+              <h3>{{product.name}}</h3>
+              <p>{{product.price}} руб.</p>
+              <button type="button" @click="pushProduct(product)">Добавить</button>
+            </div>
+          </div>
+        </div>
+      </article>
     </main>
   </div>
 </template>
@@ -26,17 +50,86 @@
 
 
 <script>
+
+import { urlCatalogData } from './constUrl.js';
+
   export default {
     data:()=> ({
-      goods: [],
-      basket: [],
+      goods: {},
+      filteredGoods: {},
+      basket: {},
+      filteredBasket: {},
       basketVisible: false,
+      searchValue: "",
     }),
     computed: {
-      // basketTotal(){
-      // } 
+      goodsList: {
+        get() {
+          return this.filteredGoods;
+        }
+      },
+      basketList: {
+        get() {
+          return this.filteredBasket;
+        }
+      },
+      fullPrice(){
+        let fullPrice = 0
+        if (Object.keys(this.basket).length>0){
+          for (const productIdx in this.basket) {
+            const product = this.basket[productIdx]
+            fullPrice += product.price*product.count
+          }
+        }
+        return fullPrice
+      }
     },
-    method: {
+    async created() {
+      await fetch(urlCatalogData)
+      .then(async res=>{return await res.json()})
+      .then(data=>{
+        for (const product of data) {
+          this.goods[product.id_product] = {
+            id: product.id_product,
+            name: product.product_name,
+            price: product.price
+          }
+        }
+        this.filteredGoods = this.goods
+      })
+    },
+    methods: {
+      switchBasketVisible(){
+        this.basketVisible = !this.basketVisible
+      },
+      //TODO сделать обновление корзины
+      pushProduct(product){
+        const newCount = this.basket[product.id] ? this.basket[product.id].count + 1 : 1;
+
+        this.$set(this.basket, product.id, {
+          ...product,
+          count: newCount
+        });
+
+        this.$set(this.filteredBasket, product.id, this.basket[product.id])
+      },
+      removeProduct(product){
+        if (product.count>1){
+          this.$set(this.basket, product.id, {
+            ...product,
+            count: product.count - 1
+          });
+          this.$set(this.filteredBasket, product.id, this.basket[product.id])
+        }
+        else {
+          this.$delete(this.filteredBasket, product.id);
+          this.$delete(this.basket, product.id);
+        }
+      },
+
+      search(product) {
+        return product.toLowerCase().includes(this.searchValue.toLowerCase())
+      },
 
     }
   }
@@ -67,7 +160,7 @@
               height: 25px;
               border-radius: 5%;
               border: none;
-          } 
+          }
       }
       .bottom{
           height: 50px;
@@ -91,9 +184,9 @@
       padding-top: 20px;
       .goods-item{
           width: 250px;
-          height: 300px;
+          height: 350px;
           border: 1px solid black;
-          
+
           .img{
               margin: 10px auto;
               width: 200px;
@@ -110,7 +203,12 @@
                   margin-left: 50%;
               }
           }
-          
+
       }
+  }
+  .line{
+    border-bottom: 1px solid black;
+    width: 100%;
+    height: 1px;
   }
 </style>

@@ -7,9 +7,9 @@ const goods = [
 ];
 for (let cart_buttonIdx = 0; cart_buttonIdx < document.getElementsByClassName("cart-button").length; cart_buttonIdx++) {
     const cart_button = document.getElementsByClassName("cart-button")[cart_buttonIdx];
-    cart_button.addEventListener("click", creatBasckets.bind(this, goods));
+    cart_button.addEventListener("click", creatBaskets.bind(this, goods));
 }
-function creatBasckets(list, event) {
+function creatBaskets(list, event) {
     const goods_list_html = document.getElementById("goods-list");
     if (goods_list_html.innerHTML=="") {
         const goodsList = []
