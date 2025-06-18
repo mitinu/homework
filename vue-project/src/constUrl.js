@@ -1,2 +1,3 @@
-export const url = "https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses"
-export const urlCatalogData = `${url}/catalogData.json`
+export const url = "http://localhost:3000"
+export const urlGetGoods = `${url}/getGoods`
+export const urlAuthorization = `${url}/authorization`

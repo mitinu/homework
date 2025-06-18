@@ -7,9 +7,10 @@
           <div class="circle"></div>
           <div class="circle"></div>
         </nav>
-        <div class="search">
-          <input type="text" id="search" v-model="searchValue">
-        </div>
+        <Search v-model="searchValue"></Search>
+        <button @click="showError()">Показать ошибку</button>
+        <button @click="exit()">выйти</button>
+
       </div>
       <div class="bottom">
         <button @click="switchBasketVisible()">Корзина</button>
@@ -17,17 +18,24 @@
       </div>
     </header>
     <main>
+      <article>
+        <alertComponents
+            v-if="alert.show"
+            :message="alert.message"
+            :type="alert.type"
+            @close="alert.show = false"
+        />
+      </article>
+      <article>
+
+      </article>
       <article class="product_list" id="basket_list" v-if="basketVisible">
         <div v-for="product in basketList" :key="product.id">
-          <div class="goods-item" v-if="search(product.name)">
-            <div class="img"></div>
-            <div class="item-content">
-              <h3>{{product.name}}</h3>
-              <p>{{product.price}} руб.</p>
-              <p>Количество: {{product.count}}</p>
-              <button type="button" @click="removeProduct(product)">удалить</button>
-            </div>
-          </div>
+          <productBasketComponents
+              :visible="search(product.name)"
+              :product="product"
+              @removeProduct="removeProduct(product)"
+          />
         </div>
         <div class="line"></div>
       </article>
@@ -51,26 +59,41 @@
 
 <script>
 
-import { urlCatalogData } from './constUrl.js';
+import {urlGetGoods} from '../constUrl.js';
+import Search from "@/main/components/searchComponents.vue";
+import productBasketComponents from "@/main/components/productBasketComponents.vue";
+import alertComponents from "@/components/alertComponents.vue";
+import Cookies from 'js-cookie';
 
   export default {
-    data:()=> ({
-      goods: {},
-      filteredGoods: {},
-      basket: {},
-      filteredBasket: {},
-      basketVisible: false,
-      searchValue: "",
-    }),
+    components:{
+      Search,
+      productBasketComponents,
+      alertComponents
+    },
+    name: "mainComponent",
+    data(){
+      return {
+        goods: {},
+        basket: {},
+        alert:{
+          show: false,
+          message: "",
+          type:"error"
+        },
+        basketVisible: false,
+        searchValue: "",
+      }
+    },
     computed: {
       goodsList: {
         get() {
-          return this.filteredGoods;
+          return this.goods;
         }
       },
       basketList: {
         get() {
-          return this.filteredBasket;
+          return this.basket;
         }
       },
       fullPrice(){
@@ -84,25 +107,68 @@ import { urlCatalogData } from './constUrl.js';
         return fullPrice
       }
     },
-    async created() {
-      await fetch(urlCatalogData)
-      .then(async res=>{return await res.json()})
-      .then(data=>{
-        for (const product of data) {
-          this.goods[product.id_product] = {
-            id: product.id_product,
-            name: product.product_name,
-            price: product.price
-          }
-        }
-        this.filteredGoods = this.goods
+    beforeCreate() {
+      if (!Cookies.get('token')) {
+        this.$router.push('/authorization')
+      }
+    },
+    created() {
+      fetch(urlGetGoods,{
+        headers:{
+          Authorization: Cookies.get('token')
+        },
+        credentials: 'include'
       })
+      .then(res=>{
+        if (!res.ok) {
+          throw new Error('мы скоро все починим, ждите)))');
+        }
+        return res.json()
+      })
+      .then(data=>{
+        console.log(data)
+        if (data.status==401){
+          this.$router.push('/authorization')
+          return;
+        }
+        if (data.status.toString()[0]==2){
+          for (const productIdx in data.goods) {
+            const product = data.goods[productIdx]
+            this.$set(this.goods, product.id, {
+              id: product.id,
+              name: product.name,
+              price: product.price
+            });
+          }
+          for (const productIdx in data.basket) {
+            const product = data.basket[productIdx]
+            this.$set(this.basket, product.id, {
+              id: product.id,
+              name: data.goods[productIdx].name,
+              price: data.goods[productIdx].price,
+              count: product.count
+            });
+          }
+          return;
+        }
+        this.showError(data.error.message)
+      })
+      .catch(e=>this.showError(e.message))
     },
     methods: {
+      exit(){
+        Cookies.remove('token');
+        this.$router.push('/authorization')
+      },
+      //TODO перетащить show в alert
+      showError(alertMessage = 'error') {
+        this.alert.show = true
+        this.alert.message = alertMessage
+        this.alert.type = "error"
+      },
       switchBasketVisible(){
         this.basketVisible = !this.basketVisible
       },
-      //TODO сделать обновление корзины
       pushProduct(product){
         const newCount = this.basket[product.id] ? this.basket[product.id].count + 1 : 1;
 
@@ -111,7 +177,6 @@ import { urlCatalogData } from './constUrl.js';
           count: newCount
         });
 
-        this.$set(this.filteredBasket, product.id, this.basket[product.id])
       },
       removeProduct(product){
         if (product.count>1){
@@ -119,10 +184,8 @@ import { urlCatalogData } from './constUrl.js';
             ...product,
             count: product.count - 1
           });
-          this.$set(this.filteredBasket, product.id, this.basket[product.id])
         }
         else {
-          this.$delete(this.filteredBasket, product.id);
           this.$delete(this.basket, product.id);
         }
       },
