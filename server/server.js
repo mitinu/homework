@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require('cors');
 const jwt = require("jsonwebtoken");
-const {verify} = require("jsonwebtoken");
 
 const secretKey = 'pizza';
 const jwtOptions = { expiresIn: '1h' }
@@ -27,9 +26,18 @@ function verificationToken(token){
 const app = express();
 app.use(express.json());
 app.use(cors({
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     origin: 'http://localhost:5173',
     credentials: true
 }));
+// app.use((req, res, next) => {
+//     res.header('Access-Control-Allow-Origin', 'http://localhost:5173'); // Укажите ваш фронтенд-адрес
+//     res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
+//     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//     next();
+// });
+
 data = {
     goods: {
         1:{
@@ -79,7 +87,9 @@ app.get("/getGoods", (req, res)=>{
     else {
         res.status(401 ).json({
             status: 401 ,
-            error: "не авторизован"
+            error: {
+                message: "неверное имя пользователя или пароль"
+            }
         });
     }
 })
@@ -102,6 +112,59 @@ app.post("/authorization", (req, res)=>{
                 }
             })
         }
+    }
+})
+
+
+app.post("/updateProductBasket", (req, res)=>{
+    const decodedToken = verificationToken(req.headers.authorization)
+    const {productId, count } = req.body;
+    if (decodedToken.userId!=-1) {
+        data.users[decodedToken.userId].basket[productId] = {
+            id: productId,
+            count: count
+        }
+    res.status(200).json({status:200})
+    }
+    else {
+        res.status(401 ).json({
+            status: 401 ,
+            error: {
+                message: "неверное имя пользователя или пароль"
+            }
+        });
+    }
+})
+app.patch("/updateProductBasket", (req, res)=>{
+    const decodedToken = verificationToken(req.headers.authorization)
+    const {productId, count } = req.body;
+    if (decodedToken.userId!=-1) {
+        data.users[decodedToken.userId].basket[productId].count = count
+        res.status(200).json({status:200})
+    }
+    else {
+        res.status(401 ).json({
+            status: 401 ,
+            error: {
+                message: "неверное имя пользователя или пароль"
+            }
+        });
+    }
+})
+app.delete("/updateProductBasket", (req, res)=>{
+    const decodedToken = verificationToken(req.headers.authorization)
+    const {productId} = req.body;
+    if (decodedToken.userId!=-1) {
+        delete data.users[decodedToken.userId].basket[productId]
+    res.status(200).json({status:200})
+    }
+    else {
+        res.status(401 ).json({
+            status: 401 ,
+            error: {
+                message: "неверное имя пользователя или пароль"
+            }
+        });
     }
 })
 

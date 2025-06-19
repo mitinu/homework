@@ -59,7 +59,7 @@
 
 <script>
 
-import {urlGetGoods} from '../constUrl.js';
+import {urlGetGoods, urlUpdateProductBasket} from '../constUrl.js';
 import Search from "@/main/components/searchComponents.vue";
 import productBasketComponents from "@/main/components/productBasketComponents.vue";
 import alertComponents from "@/components/alertComponents.vue";
@@ -113,49 +113,124 @@ import Cookies from 'js-cookie';
       }
     },
     created() {
-      fetch(urlGetGoods,{
-        headers:{
-          Authorization: Cookies.get('token')
-        },
-        credentials: 'include'
-      })
-      .then(res=>{
-        if (!res.ok) {
-          throw new Error('мы скоро все починим, ждите)))');
-        }
-        return res.json()
-      })
-      .then(data=>{
-        console.log(data)
-        if (data.status==401){
-          this.$router.push('/authorization')
-          return;
-        }
-        if (data.status.toString()[0]==2){
-          for (const productIdx in data.goods) {
-            const product = data.goods[productIdx]
-            this.$set(this.goods, product.id, {
-              id: product.id,
-              name: product.name,
-              price: product.price
-            });
-          }
-          for (const productIdx in data.basket) {
-            const product = data.basket[productIdx]
-            this.$set(this.basket, product.id, {
-              id: product.id,
-              name: data.goods[productIdx].name,
-              price: data.goods[productIdx].price,
-              count: product.count
-            });
-          }
-          return;
-        }
-        this.showError(data.error.message)
-      })
-      .catch(e=>this.showError(e.message))
+      this.GetGoods()
     },
     methods: {
+      GetGoods(){
+        this.goods = {}
+        this.basket = {}
+        fetch(urlGetGoods,{
+          headers:{
+            Authorization: Cookies.get('token')
+          },
+          credentials: 'include'
+        })
+        .then(res=>{
+          if (!res.ok) {
+            throw new Error('мы скоро все починим, ждите)))');
+          }
+          return res.json()
+        })
+        .then(data=>{
+          if (data.status==401){
+            Cookies.remove('token');
+            this.$router.push('/authorization')
+            return;
+          }
+          if (data.status.toString()[0]==2){
+            for (const productIdx in data.goods) {
+              const product = data.goods[productIdx]
+              this.$set(this.goods, product.id, {
+                id: product.id,
+                name: product.name,
+                price: product.price
+              });
+            }
+            for (const productIdx in data.basket) {
+              const product = data.basket[productIdx]
+              this.$set(this.basket, product.id, {
+                id: product.id,
+                name: data.goods[productIdx].name,
+                price: data.goods[productIdx].price,
+                count: product.count
+              });
+            }
+            return;
+          }
+          this.showError(data.error.message)
+        })
+        .catch(e=>this.showError(e.message))
+      },
+      updateProductBasket(method, productId, count){
+        console.log(method, productId, count)
+        switch (method){
+          case "patch":
+            fetch(urlUpdateProductBasket,{
+              method: "PATCH",
+              headers:{
+                "Content-Type": "application/json",
+                Authorization: Cookies.get('token')
+              },
+              credentials: 'include',
+              body: JSON.stringify({
+                productId: productId,
+                count: count,
+              })
+            })
+            .then(res=>{
+              if(!res.ok){this.GetGoods()}
+              return res.json()
+            })
+            .then(data=>{
+              if (data.status!=200){this.GetGoods()}
+            })
+            .catch(e=>{this.GetGoods()})
+            break
+          case "post":
+            fetch(urlUpdateProductBasket,{
+              method: "POST",
+              headers:{
+                "Content-Type": "application/json",
+                Authorization: Cookies.get('token')
+              },
+              credentials: 'include',
+              body: JSON.stringify({
+                productId: productId,
+                count: count,
+              })
+            })
+            .then(res=>{
+              if(!res.ok){this.GetGoods()}
+              return res.json()
+            })
+            .then(data=>{
+              if (data.status!=200){this.GetGoods()}
+            })
+            .catch(e=>{this.GetGoods()})
+            break
+          case "delete":
+            fetch(urlUpdateProductBasket,{
+              method: "DELETE",
+              headers:{
+                "Content-Type": "application/json",
+                Authorization: Cookies.get('token')
+              },
+              credentials: 'include',
+              body: JSON.stringify({
+                productId: productId
+              })
+            })
+            .then(res=>{
+              if(!res.ok){this.GetGoods()}
+              return res.json()
+            })
+            .then(data=>{
+              if (data.status!=200){this.GetGoods()}
+            })
+            .catch(e=>{this.GetGoods()})
+            break
+        }
+      },
       exit(){
         Cookies.remove('token');
         this.$router.push('/authorization')
@@ -170,13 +245,18 @@ import Cookies from 'js-cookie';
         this.basketVisible = !this.basketVisible
       },
       pushProduct(product){
-        const newCount = this.basket[product.id] ? this.basket[product.id].count + 1 : 1;
-
+        let newCount
+        if (this.basket[product.id]){
+          newCount = this.basket[product.id].count + 1
+        }
+        else {
+          newCount = 1
+        }
         this.$set(this.basket, product.id, {
           ...product,
           count: newCount
         });
-
+        this.updateProductBasket(newCount==1?"post":"patch", product.id, newCount)
       },
       removeProduct(product){
         if (product.count>1){
@@ -184,9 +264,11 @@ import Cookies from 'js-cookie';
             ...product,
             count: product.count - 1
           });
+          this.updateProductBasket("patch", product.id, product.count - 1)
         }
         else {
           this.$delete(this.basket, product.id);
+          this.updateProductBasket("delete", product.id)
         }
       },
 
