@@ -1,6 +1,8 @@
+const fse = require('fs-extra');
+const path = require('path');
 const express = require("express");
-const cors = require('cors');
 const jwt = require("jsonwebtoken");
+const cors = require('cors');
 
 const secretKey = 'pizza';
 const jwtOptions = { expiresIn: '1h' }
@@ -124,6 +126,7 @@ app.post("/updateProductBasket", (req, res)=>{
             id: productId,
             count: count
         }
+    logStats(decodedToken.userId,"post", productId, count)
     res.status(200).json({status:200})
     }
     else {
@@ -140,6 +143,7 @@ app.patch("/updateProductBasket", (req, res)=>{
     const {productId, count } = req.body;
     if (decodedToken.userId!=-1) {
         data.users[decodedToken.userId].basket[productId].count = count
+        logStats(decodedToken.userId,"patch", productId, count)
         res.status(200).json({status:200})
     }
     else {
@@ -156,7 +160,8 @@ app.delete("/updateProductBasket", (req, res)=>{
     const {productId} = req.body;
     if (decodedToken.userId!=-1) {
         delete data.users[decodedToken.userId].basket[productId]
-    res.status(200).json({status:200})
+        logStats(decodedToken.userId,"delete", productId)
+        res.status(200).json({status:200})
     }
     else {
         res.status(401 ).json({
@@ -167,6 +172,31 @@ app.delete("/updateProductBasket", (req, res)=>{
         });
     }
 })
+
+logStatsCount = 1
+async function logStats(userId, method, productId, count=null){
+    const filePath = path.join(__dirname, "/log/stats.json")
+    const date = new Date();
+    const fullDateObject = {
+        year: String(date.getFullYear()),
+        month: String(date.getMonth() + 1).padStart(2, '0'),
+        day: String(date.getDate()).padStart(2, '0'),
+        hours: String(date.getHours()).padStart(2, '0'),
+        minutes: String(date.getMinutes()).padStart(2, '0'),
+        seconds: String(date.getSeconds()).padStart(2, '0'),
+        milliseconds: String(date.getMilliseconds()).padStart(3, '0'),
+    };
+    const fullDate = `${fullDateObject.year}.${fullDateObject.month}.${fullDateObject.day}.${fullDateObject.hours}:${fullDateObject.minutes}:${fullDateObject.seconds}:${fullDateObject.milliseconds}`
+    const data = await fse.readJson(filePath);
+    data.logStats[fullDate] = {
+        userId,
+        method,
+        productId,
+        count,
+        fullDate
+    }
+    await fse.writeJson(filePath, data, { spaces: 2 });
+}
 
 const PORT = 3000
 app.listen(PORT, console.log(`http://localhost:${PORT}`))
