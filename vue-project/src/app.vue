@@ -73,7 +73,7 @@ export default {
 }
 </script>
 
-<style scoped >
+<style lang="less" scoped>
 header{
   background-color: gray;
   display: flex;

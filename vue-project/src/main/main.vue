@@ -252,7 +252,7 @@ import Cookies from 'js-cookie';
 
 
 
-<style>
+<style lang="less" scoped>
 
   .bottom{
     height: 50px;
