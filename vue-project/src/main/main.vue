@@ -1,34 +1,10 @@
 <template>
   <div>
-    <header>
-      <div class="top">
-        <nav>
-          <div class="circle"></div>
-          <div class="circle"></div>
-          <div class="circle"></div>
-        </nav>
-        <Search v-model="searchValue"></Search>
-        <button @click="showError()">Показать ошибку</button>
-        <button @click="exit()">выйти</button>
-
-      </div>
-      <div class="bottom">
-        <button @click="switchBasketVisible()">Корзина</button>
-        <div><span>стоимость: </span><span>{{fullPrice}} руб.</span></div>
-      </div>
-    </header>
+    <div class="bottom">
+      <button @click="switchBasketVisible()">Корзина</button>
+      <div><span>стоимость: </span><span>{{fullPrice}} руб.</span></div>
+    </div>
     <main>
-      <article>
-        <alertComponents
-            v-if="alert.show"
-            :message="alert.message"
-            :type="alert.type"
-            @close="alert.show = false"
-        />
-      </article>
-      <article>
-
-      </article>
       <article class="product_list" id="basket_list" v-if="basketVisible">
         <div v-for="product in basketList" :key="product.id">
           <productBasketComponents
@@ -62,27 +38,29 @@
 import {urlGetGoods, urlUpdateProductBasket} from '../constUrl.js';
 import Search from "@/main/components/searchComponents.vue";
 import productBasketComponents from "@/main/components/productBasketComponents.vue";
-import alertComponents from "@/components/alertComponents.vue";
 import Cookies from 'js-cookie';
 
   export default {
     components:{
       Search,
       productBasketComponents,
-      alertComponents
     },
     name: "mainComponent",
+    props:{
+      searchValue:{
+        type: String,
+        required: true
+      },
+    },
     data(){
       return {
         goods: {},
         basket: {},
-        alert:{
-          show: false,
-          message: "",
-          type:"error"
+        parametersCreate: {
+          visibleSearch: true,
+          visibleExit: true
         },
         basketVisible: false,
-        searchValue: "",
       }
     },
     computed: {
@@ -113,6 +91,7 @@ import Cookies from 'js-cookie';
       }
     },
     created() {
+      this.$emit('returnParametersCreate', this.parametersCreate);
       this.GetGoods()
     },
     methods: {
@@ -157,12 +136,12 @@ import Cookies from 'js-cookie';
             }
             return;
           }
-          this.showError(data.error.message)
+          this.$emit("showError", data.error.message)
+
         })
-        .catch(e=>this.showError(e.message))
+        .catch(e=>this.$emit("showError", e.message))
       },
       updateProductBasket(method, productId, count){
-        console.log(method, productId, count)
         switch (method){
           case "patch":
             fetch(urlUpdateProductBasket,{
@@ -231,16 +210,7 @@ import Cookies from 'js-cookie';
             break
         }
       },
-      exit(){
-        Cookies.remove('token');
-        this.$router.push('/authorization')
-      },
-      //TODO перетащить show в alert
-      showError(alertMessage = 'error') {
-        this.alert.show = true
-        this.alert.message = alertMessage
-        this.alert.type = "error"
-      },
+
       switchBasketVisible(){
         this.basketVisible = !this.basketVisible
       },
@@ -283,44 +253,20 @@ import Cookies from 'js-cookie';
 
 
 <style>
-  header{
-      .top{
-          background-color: gray;
-          display: flex;
-          height: 50px;
-          align-items: center;
-          nav{
-              display: flex;
-              margin: 0 10px;
-              .circle{
-                  margin: 0 5px;
-                  width: 25px;
-                  height: 25px;
-                  background-color: whitesmoke;
-                  border-radius: 50%;
-              }
-          }
-          .serch input[type="text"]{
-              width: 500px;
-              height: 25px;
-              border-radius: 5%;
-              border: none;
-          }
-      }
-      .bottom{
-          height: 50px;
-          display: flex;
-          justify-content: space-evenly;
-          align-items: center;
-          width: 100%;
-          border: 1px solid black;
-          button{
-              height: 25px;
-              width: 100px;
-              border-radius: 20%;
-              border: 1px solid black;
-          }
-      }
+
+  .bottom{
+    height: 50px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 100%;
+    border: 1px solid black;
+    button{
+      height: 25px;
+      width: 100px;
+      border-radius: 20%;
+      border: 1px solid black;
+    }
   }
   main .product_list{
       display: flex;

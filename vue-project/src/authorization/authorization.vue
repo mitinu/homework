@@ -1,14 +1,6 @@
 <template>
   <div>
     <article>
-      <alertComponents
-          v-if="alert.show"
-          :message="alert.message"
-          :type="alert.type"
-          @close="alert.show = false"
-      />
-    </article>
-    <article>
       <form @submit.prevent="handleLogin()">
         <input v-model="login" type="text" placeholder="login">
         <input v-model="password" type="password" placeholder="Password">
@@ -20,31 +12,31 @@
 
 <script>
 import {urlAuthorization} from "@/constUrl";
-import alertComponents from "@/components/alertComponents.vue";
 import Cookies from 'js-cookie';
 
 export default {
-  components:{
-    alertComponents
-  },
+
   name: "authorization",
   data(){
     return{
-      alert:{
-        show: false,
-        message: "",
-        type:"error"
+      parametersCreate:{
+        visibleSearch: false,
+        visibleExit: false
       },
       login: "",
       password: ""
     }
   },
+  beforeCreate() {
+    if (!Cookies.get('token')) {
+      this.$router.push('/authorization')
+    }
+  },
+  created() {
+    this.$emit('returnParametersCreate', this.parametersCreate);
+  },
   methods:{
-    showError(alertMessage = 'error') {
-      this.alert.show = true
-      this.alert.message = alertMessage
-      this.alert.type = "error"
-    },
+
     handleLogin(){
       fetch(urlAuthorization,{
         method: "POST",
@@ -63,7 +55,7 @@ export default {
           this.$router.push('/')
         }
         else {
-          this.showError(data.error.message)
+          this.$emit("showError", data.error.message)
         }
       })
 
