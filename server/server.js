@@ -175,7 +175,8 @@ app.delete("/updateProductBasket", (req, res)=>{
 
 logStatsCount = 1
 async function logStats(userId, method, productId, count=null){
-    const filePath = path.join(__dirname, "/log/stats.json")
+    const dirPath = path.join(__dirname, 'log')
+    const filePath = path.join(dirPath, "/stats.json")
     const date = new Date();
     const fullDateObject = {
         year: String(date.getFullYear()),
@@ -187,6 +188,14 @@ async function logStats(userId, method, productId, count=null){
         milliseconds: String(date.getMilliseconds()).padStart(3, '0'),
     };
     const fullDate = `${fullDateObject.year}.${fullDateObject.month}.${fullDateObject.day}.${fullDateObject.hours}:${fullDateObject.minutes}:${fullDateObject.seconds}:${fullDateObject.milliseconds}`
+
+    if (!await fse.pathExists(dirPath)){
+        await fse.ensureDir(dirPath);
+    }
+    if (!await fse.pathExists(filePath)){
+        const initialData = {logStats: {}};
+        await fse.writeJson(filePath, initialData)
+    }
     const data = await fse.readJson(filePath);
     data.logStats[fullDate] = {
         userId,
