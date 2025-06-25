@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты тестов</title>
+    <link rel="stylesheet" href="displaying/styleTest.css">
+</head>
+<body>
+<main>
+    <div class="container">
+        <h1>Результаты тестирования</h1>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value">24</div>
+                <div class="stat-label">Всего тестов</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">18</div>
+                <div class="stat-label">Пройдено</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">6</div>
+                <div class="stat-label">Провалено</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">75%</div>
+                <div class="stat-label">Успешность</div>
+            </div>
+        </div>
+
+        <div class="search-filter">
+            <input type="text" class="search-box" placeholder="Поиск тестов...">
+            <select class="filter-select">
+                <option value="all">Все тесты</option>
+                <option value="passed">Только пройденные</option>
+                <option value="failed">Только проваленные</option>
+            </select>
+        </div>
+
+        <div id="test_list">
+<!--            <div class="test-item passed">-->
+<!--                <div class="test-info">-->
+<!--                    <div class="test-name">Основы HTML</div>-->
+<!--                    <div class="test-date">Завершено: 15.05.2023</div>-->
+<!--                </div>-->
+<!--                <div class="test-status">Пройден</div>-->
+<!--            </div>-->
+
+<!--            <div class="test-item passed">-->
+<!--                <div class="test-info">-->
+<!--                    <div class="test-name">CSS: Flexbox</div>-->
+<!--                    <div class="test-date">Завершено: 18.05.2023</div>-->
+<!--                </div>-->
+<!--                <div class="test-status">Пройден</div>-->
+<!--            </div>-->
+
+<!--            <div class="test-item failed">-->
+<!--                <div class="test-info">-->
+<!--                    <div class="test-name">JavaScript: Асинхронность</div>-->
+<!--                    <div class="test-date">Завершено: 22.05.2023</div>-->
+<!--                </div>-->
+<!--                <div class="test-status">Провален</div>-->
+<!--            </div>-->
+
+<!--            <div class="test-item passed">-->
+<!--                <div class="test-info">-->
+<!--                    <div class="test-name">React: Основы</div>-->
+<!--                    <div class="test-date">Завершено: 25.05.2023</div>-->
+<!--                </div>-->
+<!--                <div class="test-status">Пройден</div>-->
+<!--            </div>-->
+
+<!--            <div class="test-item in-progress">-->
+<!--                <div class="test-info">-->
+<!--                    <div class="test-name">Node.js: Серверная разработка</div>-->
+<!--                    <div class="test-date">В процессе</div>-->
+<!--                </div>-->
+<!--                <div class="test-status">В процессе</div>-->
+<!--            </div>-->
+        </div>
+    </div>
+    <iframe id="externalPage" src=""></iframe>
+</main>
+<script type="module" src="displaying/scriptTest.js"></script>
+</body>
+</html>
