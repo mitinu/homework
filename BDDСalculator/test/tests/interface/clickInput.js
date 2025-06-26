@@ -6,10 +6,10 @@ const clickInput = {
         const iframeDoc = iframe.contentDocument
         const data = iframe.contentWindow.data
 
-        const inputsNumber = iframeDoc.getElementsByClassName("number")
+        const inputsNumber = Array.from(iframeDoc.getElementsByClassName("number"))
         const inputClear = iframeDoc.getElementById("clear")
         const inputBackspace = iframeDoc.getElementById("backspace")
-        const inputsOperator = iframeDoc.getElementsByClassName("operator")
+        const inputsOperator = Array.from(iframeDoc.getElementsByClassName("operator"))
         const inputPoint = iframeDoc.getElementById("point")
         /**проверка: стирания*/
         for (const inputNumberIdx in Array.from(inputsNumber)) {
@@ -27,7 +27,7 @@ const clickInput = {
         }
 
         /**проверка: цифры, числа и удаление цифр*/
-        for (const inputNumberIdx in Array.from(inputsNumber)) {
+        for (const inputNumberIdx in inputsNumber) {
             const inputNumber = inputsNumber[inputNumberIdx]
             inputNumber.click();
             if (data.numbers[0] != inputNumber.innerHTML){
@@ -69,7 +69,7 @@ const clickInput = {
         }
         /**проверка: операторы и удаление операторов*/
 
-        for (const inputOperatorIdx in Array.from(inputsOperator)) {
+        for (const inputOperatorIdx in inputsOperator) {
             const inputOperator = inputsOperator[inputOperatorIdx]
             inputOperator.click()
             if (data.operators[0]){
