@@ -84,7 +84,7 @@ document.getElementById("point").addEventListener("click", event=>{
 function updatingVisibility(){
     let value = ""
     for (let i = 0; i < data.numbers.length; i++) {
-        value += data.numbers[i]?data.numbers[i]:""
+        value += data.numbers[i]
         value += data.operators[i]?data.operators[i]:""
     }
     document.getElementById("input").innerHTML = value

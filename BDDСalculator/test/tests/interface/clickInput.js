@@ -1,9 +1,11 @@
 const clickInput = {
-    pathsPage:["index/index.html"],
+    pathPage:"index/index.html",
     name: "нажатие на кнопки",
-    test:function (data){
+    test:function (iframe){
         let errors = []
-        const iframeDoc = document.getElementById("externalPage").contentDocument
+        const iframeDoc = iframe.contentDocument
+        const data = iframe.contentWindow.data
+
         const inputsNumber = iframeDoc.getElementsByClassName("number")
         const inputClear = iframeDoc.getElementById("clear")
         const inputBackspace = iframeDoc.getElementById("backspace")
@@ -137,7 +139,6 @@ const clickInput = {
             pushError(errors, `ставится более 1 '.'`)
         }
         inputClear.click()
-
         return errors;
     }
 }
