@@ -1,4 +1,7 @@
+import pushError from "/../../utilit/pushError.js"
+
 const updatingVisibility = {
+    type: "interface",
     testData: {
         numbers: ["10.1","31"],
         operators: ["+"]
@@ -6,6 +9,7 @@ const updatingVisibility = {
     pathPage: "index/index.html",
     name: "визуальное отображение",
     test:function (iframe, testData=updatingVisibility.testData){
+        console.log(testData)
         let errors = []
         const iframeDoc = document.getElementById("externalPage").contentDocument
 
@@ -30,9 +34,3 @@ const updatingVisibility = {
 }
 
 export default updatingVisibility
-
-function pushError(errors, message){
-    if (errors.indexOf(message)==-1)
-        errors.push(message)
-    return errors
-}

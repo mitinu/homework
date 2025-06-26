@@ -1,4 +1,8 @@
+//место одновременного вызова разных кнопок, нужно вызывать только кнопки которые мы тестируем
+import pushError from "/../../utilit/pushError.js"
+
 const clickInput = {
+    type: "interface",
     pathPage:"index/index.html",
     name: "нажатие на кнопки",
     test:function (iframe){
@@ -144,8 +148,3 @@ const clickInput = {
 }
 export default clickInput
 
-function pushError(errors, message){
-    if (errors.indexOf(message)==-1)
-        errors.push(message)
-    return errors
-}

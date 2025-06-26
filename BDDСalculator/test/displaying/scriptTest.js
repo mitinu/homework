@@ -1,41 +1,6 @@
 import clickInput from "/tests/interface/clickInput.js"
 import updatingVisibility from "/tests/interface/updatingVisibility.js"
 
-const htmlCountTestAll = document.getElementById("countTestAll")
-const htmlCountTestPassed = document.getElementById("countTestPassed")
-const htmlCountTestFailed = document.getElementById("countTestFailed")
-
-document.getElementById("filter_select").addEventListener("change", event=>{
-    const htmlPassedTests = Array.from(document.getElementsByClassName("passed"))
-    const htmlFailedTests = Array.from(document.getElementsByClassName("failed"))
-    switch (event.target.value){
-        case "all":
-            for (const htmlPassedTest of htmlPassedTests) {
-                htmlPassedTest.style.display = "block"
-            }
-            for (const htmlFailedTest of htmlFailedTests) {
-                htmlFailedTest.style.display = "block"
-            }
-            break
-        case "passed":
-            for (const htmlPassedTest of htmlPassedTests) {
-                htmlPassedTest.style.display = "block"
-            }
-            for (const htmlFailedTest of htmlFailedTests) {
-                htmlFailedTest.style.display = "none"
-            }
-            break
-        case "failed":
-            for (const htmlPassedTest of htmlPassedTests) {
-                htmlPassedTest.style.display = "none"
-            }
-            for (const htmlFailedTest of htmlFailedTests) {
-                htmlFailedTest.style.display = "block"
-            }
-            break
-
-    }
-})
 
 
 
@@ -52,7 +17,11 @@ document.addEventListener('DOMContentLoaded', allTest);
 async function allTest(){
     for (const test of tests) {
         console.log(test)
-        const errors = await startTest(iframe, test);
+        let errors
+        switch (clickInput.type){
+            case "interface":
+                errors = await startTestInterface(iframe, test);
+        }
         const status = errors.length==0
         status?console.log():console.log(errors);
         const htmlCode = `
@@ -64,6 +33,11 @@ async function allTest(){
             </div>
         `
         document.getElementById("test_list").insertAdjacentHTML('beforeend', htmlCode);
+
+        const htmlCountTestAll = document.getElementById("countTestAll")
+        const htmlCountTestPassed = document.getElementById("countTestPassed")
+        const htmlCountTestFailed = document.getElementById("countTestFailed")
+
         htmlCountTestAll.innerHTML = parseInt(htmlCountTestAll.innerHTML)+1;
         if (status)
             htmlCountTestPassed.innerHTML = parseInt(htmlCountTestPassed.innerHTML)+1;
@@ -73,7 +47,7 @@ async function allTest(){
 
     }
 }
-async function startTest(iframe, test){
+async function startTestInterface(iframe, test){
 
     return new Promise((resolve) => {
         iframe.src = test.pathPage;
