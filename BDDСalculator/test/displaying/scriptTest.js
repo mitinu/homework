@@ -1,5 +1,6 @@
 import clickInput from "/tests/interface/clickInput.js"
 import updatingVisibility from "/tests/interface/updatingVisibility.js"
+import calculationsTest from "/tests/unit/calculationsTest.js"
 
 
 
@@ -9,7 +10,8 @@ import updatingVisibility from "/tests/interface/updatingVisibility.js"
 const iframe = document.getElementById("externalPage")
 const tests = [
     clickInput,
-    updatingVisibility
+    updatingVisibility,
+    calculationsTest
 ]
 
 
@@ -18,9 +20,13 @@ async function allTest(){
     for (const test of tests) {
         console.log(test)
         let errors
-        switch (clickInput.type){
+        switch (test.type){
             case "interface":
                 errors = await startTestInterface(iframe, test);
+                break
+            case "function":
+                errors = await startTestFunction(test);
+                break
         }
         const status = errors.length==0
         status?console.log():console.log(errors);
@@ -57,5 +63,7 @@ async function startTestInterface(iframe, test){
 
     })
 }
-
+function startTestFunction(test){
+    return test.test()
+}
 

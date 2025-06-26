@@ -89,3 +89,7 @@ function updatingVisibility(){
     }
     document.getElementById("input").innerHTML = value
 }
+
+document.getElementById("equals").addEventListener("click", event=>{
+    document.getElementById("result").innerHTML = calculations(data)
+})

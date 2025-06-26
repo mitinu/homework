@@ -6,27 +6,19 @@ const updatingVisibility = {
         numbers: ["10.1","31"],
         operators: ["+"]
     },
+    resultExpected: "10.1+31",
     pathPage: "index/index.html",
     name: "визуальное отображение",
-    test:function (iframe, testData=updatingVisibility.testData){
-        console.log(testData)
+    test:function (iframe){
         let errors = []
-        const iframeDoc = document.getElementById("externalPage").contentDocument
+        const iframeDoc = iframe.contentDocument
 
-        iframe.contentWindow.data = testData
-        iframe.contentWindow.updatingVisibility()
-        const resultExpected =(()=>{
-            let value = ""
-            for (let i = 0; i < testData.numbers.length; i++) {
-                value += testData.numbers[i]
-                value += testData.operators[i]?testData.operators[i]:""
-            }
-            return value
-        })();
+        iframe.contentWindow.data = this.testData;
+        iframe.contentWindow.updatingVisibility();
 
         const resultReal = iframeDoc.getElementById("input").innerHTML
-        if (resultExpected!=resultReal){
-            pushError(errors, `ожидаем:${resultExpected} получаем:${resultReal}`)
+        if (this.resultExpected!=resultReal){
+            pushError(errors, `ожидаем:${this.resultExpected} получаем:${resultReal}`)
         }
         return errors;
 

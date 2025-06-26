@@ -8,5 +8,5 @@ app.get("/", (req,res)=>{
     res.sendFile(path.join(__dirname, "test/displaying/displaying.html"))
 })
 
-const PORT = 3000
-app.listen(3000, console.log(`отчет по тестам\nhttp://localhost:${PORT}`))
+const PORT = 3001
+app.listen(PORT, console.log(`отчет по тестам\nhttp://localhost:${PORT}`))
